@@ -15,7 +15,7 @@ import org.openqa.selenium.WebElement;
 
 import com.qa.keyword1.base.Base;
 
-public class KeyWordEngine {
+public class KeyWordEngine1 {
 
 	public WebDriver driver;
 	public Properties prop;
@@ -30,6 +30,8 @@ public class KeyWordEngine {
 
 	public void startExecution(String sheetName) {
 
+		String locatorName = null;
+		String locatorValue = null;
 		FileInputStream file = null;
 
 		try {
@@ -51,10 +53,15 @@ public class KeyWordEngine {
 		int k = 0;
 		for (int i = 0; i < sheet.getLastRowNum(); i++) {
 			try {
-			String locatorType = sheet.getRow(i + 1).getCell(k + 1).toString().trim();
-			String locatorValue = sheet.getRow(i + 1).getCell(k + 2).toString().trim();
-			String action = sheet.getRow(i + 1).getCell(k + 3).toString().trim();
-			String value = sheet.getRow(i + 1).getCell(k + 4).toString().trim();
+			String locatorColValueString = sheet.getRow(i + 1).getCell(k + 1).toString().trim();
+			//no xpath so used earlier approach
+			if (!locatorColValueString.equalsIgnoreCase("NA")) {
+				locatorName = locatorColValueString.split("=")[0].trim();
+				locatorValue = locatorColValueString.split("=")[1].trim();
+			}
+
+			String action = sheet.getRow(i + 1).getCell(k + 2).toString().trim();
+			String value = sheet.getRow(i + 1).getCell(k + 3).toString().trim();
 
 			switch (action) {
 			case "open browser":
@@ -83,7 +90,7 @@ public class KeyWordEngine {
 				break;
 			}
 
-			switch (locatorType) {
+			switch (locatorName) {
 			case "id":
 				element = driver.findElement(By.id(locatorValue));
 				if (action.equalsIgnoreCase("sendKeys")) {
@@ -92,13 +99,12 @@ public class KeyWordEngine {
 				} else if (action.equalsIgnoreCase("click")) {
 					element.click();
 				}
-				locatorType = null;
 				break;
 
 			case "linkText":
 				element = driver.findElement(By.linkText(locatorValue));
 				element.click();
-				locatorType = null;
+				locatorName = null;
 				break;
 
 			default:

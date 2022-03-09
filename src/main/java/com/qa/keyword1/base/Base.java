@@ -26,6 +26,7 @@ public class Base {
 			}
 			else {
 				driver = new ChromeDriver();
+				driver.manage().window().maximize();
 			}
 		}
 		return driver;
